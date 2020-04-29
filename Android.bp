@@ -1,6 +1,6 @@
 cc_library_shared {
     name: "libCommonAPI-SomeIP",
-    vendor: true,
+    vendor_available: true,
     rtti: true,
     cpp_std: "gnu++11",
 
