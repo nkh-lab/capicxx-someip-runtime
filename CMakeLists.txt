@@ -110,10 +110,12 @@ endforeach ()
 
 ###################################################################################################
 
-if ("${USE_INSTALLED_COMMONAPI}" STREQUAL "ON")
-    FIND_PACKAGE(CommonAPI 3.1.12 REQUIRED CONFIG NO_CMAKE_PACKAGE_REGISTRY)
-else()
-    FIND_PACKAGE(CommonAPI 3.1.12 REQUIRED CONFIG NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH)
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    if ("${USE_INSTALLED_COMMONAPI}" STREQUAL "ON")
+        FIND_PACKAGE(CommonAPI 3.1.12 REQUIRED CONFIG NO_CMAKE_PACKAGE_REGISTRY)
+    else()
+        FIND_PACKAGE(CommonAPI 3.1.12 REQUIRED CONFIG NO_SYSTEM_ENVIRONMENT_PATH NO_CMAKE_SYSTEM_PATH)
+    endif()
 endif()
 
 message(STATUS "CommonAPI_CONSIDERED_CONFIGS: ${CommonAPI_CONSIDERED_CONFIGS}")
@@ -121,11 +123,19 @@ message(STATUS "COMMONAPI_INCLUDE_DIRS: ${COMMONAPI_INCLUDE_DIRS}")
 message(STATUS "CommonAPI Version: ${CommonAPI_VERSION}")
 
 # Boost
-find_package( Boost 1.54 COMPONENTS system thread log REQUIRED )
+if (${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    ndk_find_package_boost(system thread log)
+else()
+    find_package( Boost 1.54 COMPONENTS system thread log REQUIRED )
+endif()
 include_directories( ${Boost_INCLUDE_DIR} )
 
-find_package (vsomeip3 3.1.7 REQUIRED)
-message(STATUS "vsomeip3 version: ${vsomeip3_VERSION}")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../capicxx-core-runtime/include)
+else()
+    find_package (vsomeip3 3.1.7 REQUIRED)
+    message(STATUS "vsomeip3 version: ${vsomeip3_VERSION}")
+endif()
 
 include_directories (
     include
@@ -214,4 +224,6 @@ endif()
 
 ##############################################################################
 # maintainer-clean
-add_custom_target(maintainer-clean COMMAND rm -rf *)
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    add_custom_target(maintainer-clean COMMAND rm -rf *)
+endif()
