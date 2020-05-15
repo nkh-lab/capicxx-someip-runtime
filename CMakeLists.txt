@@ -109,8 +109,9 @@ foreach (p LIB BIN INCLUDE CMAKE)
 endforeach ()
 
 ###################################################################################################
-
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../capicxx-core-runtime/include)
+else()
     if ("${USE_INSTALLED_COMMONAPI}" STREQUAL "ON")
         FIND_PACKAGE(CommonAPI 3.1.12 REQUIRED CONFIG NO_CMAKE_PACKAGE_REGISTRY)
     else()
@@ -130,9 +131,7 @@ else()
 endif()
 include_directories( ${Boost_INCLUDE_DIR} )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Android")
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../capicxx-core-runtime/include)
-else()
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Android")
     find_package (vsomeip3 3.1.7 REQUIRED)
     message(STATUS "vsomeip3 version: ${vsomeip3_VERSION}")
 endif()
